@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cors());
 
 
-
+x
 app.patch("/:slug", async (req, res, callback) => {
     const id = req.params.slug;
 
@@ -28,7 +28,9 @@ app.patch("/:slug", async (req, res, callback) => {
     }
 });
 
-
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static("shortner-client/build"));
+}
 
 
 app.listen(PORT, () => console.log(`The server has started on port: ${PORT}`));
