@@ -10,25 +10,6 @@ app.use(express.json());
 app.use(cors());
 
 
-app.get("/:slug", async (req, res, next) => {
-    const id = req.params.slug;
-    try {
-        const foundURL = await Url.findOne({ slug: id });
-
-        if (foundURL) {
-            Url.findOneAndUpdate({ slug: id }, { $inc: { views: 1 } }, { new: true }, function (err, response) {
-                if (err) {
-                    next(err);
-                } else {
-                    next(response);
-                }
-            });
-            res.redirect(foundURL.url);
-        }
-    } catch (error) {
-        console.log(error);
-    }
-});
 
 app.patch("/:slug", async (req, res, callback) => {
     const id = req.params.slug;
