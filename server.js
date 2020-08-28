@@ -5,12 +5,34 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const Url = require("./models/url");
 const PORT = process.env.PORT || 4000;
-const { nanoid } = require("nanoid");
 app.use(express.json());
 app.use(cors());
 
+app.get("/", function (req, res) {
+    res.redirect("https://ur1-sh.herokuapp.com");
+});
 
-x
+
+app.get("/:slug", async (req, res, next) => {
+    const id = req.params.slug;
+    try {
+        const foundURL = await Url.findOne({ slug: id });
+
+        if (foundURL) {
+            Url.findOneAndUpdate({ slug: id }, { $inc: { views: 1 } }, { new: true }, function (err, response) {
+                if (err) {
+                    next(err);
+                } else {
+                    next(response);
+                }
+            });
+            res.redirect(foundURL.url);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+});
+
 app.patch("/:slug", async (req, res, callback) => {
     const id = req.params.slug;
 
@@ -27,10 +49,6 @@ app.patch("/:slug", async (req, res, callback) => {
         console.log(error);
     }
 });
-
-if (process.env.NODE_ENV === "production") {
-    app.use(express.static("shortner-client/build"));
-}
 
 
 app.listen(PORT, () => console.log(`The server has started on port: ${PORT}`));
@@ -50,5 +68,3 @@ mongoose.connect(
     }
 );
 
-app.use("/users", require("./routes/userRouter"));
-app.use("/url", require("./routes/urlRouter"));
